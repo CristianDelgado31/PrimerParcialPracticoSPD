@@ -8,10 +8,10 @@
 
 
 ## Proyecto: Montacarga funcional
-![Sistema de incendio](https://gyazo.com/f718582f7c4689e7726fbd4e8408025c.jpg)
+![Sistema de incendio](https://gyazo.com/f718582f7c4689e7726fbd4e8408025c.png)
 
 ## Diagrama esquematico del circuito
-![diagrama esquematico](https://gyazo.com/3c083b336d816ce48808020de005977f.jpg)
+![diagrama esquematico](https://gyazo.com/3c083b336d816ce48808020de005977f.png)
 
 ## Descripción
 Sistema de incendio que muestra el tipo de nivel mediante el uso del display 7 segmentos y LEDs
