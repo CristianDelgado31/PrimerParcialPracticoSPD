@@ -1,0 +1,234 @@
+// C++ code
+//
+#define LED_R 13
+#define LED_A 11
+#define BOTON_ON 3
+#define BOTON_OFF 2
+const int sensorPin = A0;
+int sensorValor = 0;
+int numeros[8] = {12,10,9,8,7,6,5,4};
+char nivelAnterior = '0';
+bool estadoSistema = false;
+
+void setup()
+{
+  pinMode(LED_R, OUTPUT);
+  pinMode(LED_A, OUTPUT);
+  pinMode(BOTON_ON,INPUT);
+  pinMode(BOTON_OFF,INPUT);
+  for(int i = 0; i < 8; i++){
+   	 pinMode(numeros[i], OUTPUT);
+  }
+  Serial.begin(9600);
+}
+
+void loop()
+{
+
+  int estadoBotonON = digitalRead(BOTON_ON);
+  int estadoBotonOFF = digitalRead(BOTON_OFF);
+  Serial.println(estadoBotonON);
+  Serial.println(estadoBotonOFF);
+  delay(1000);
+  
+  if(estadoBotonON == LOW){
+   	 estadoSistema = true;
+     nivelAnterior = '0';
+  }
+  if(estadoBotonOFF == LOW){
+  	 estadoSistema = false;
+     ApagarMuestraNivelTemperatura();
+  }
+  
+  //////////////////////////////////////////////////////////
+  
+  if(estadoSistema == true){
+    sensorValor = analogRead(sensorPin);
+    //long temperatura = map(sensorValor, 0, 1023, -50, 150);
+    float voltaje = sensorValor * (5.0 / 1023.0);
+    int temperatura = round((voltaje - 0.5) * 100.0);
+    Serial.print(temperatura);
+    Serial.println("c");
+    char nivel = VerificarNivelTemperatura(temperatura);
+
+    if(temperatura > 60){
+       digitalWrite(LED_R, HIGH);
+       digitalWrite(LED_A, HIGH);
+    }
+    else{
+       digitalWrite(LED_R, LOW);
+       digitalWrite(LED_A, LOW);
+    }
+
+    Serial.println(nivel);
+    Serial.println(nivelAnterior);
+
+    if(nivel != nivelAnterior){
+       ApagarMuestraNivelTemperatura();
+       delay(1000);
+       MostrarNivelTemperatura(nivel);
+       nivelAnterior = nivel;
+    }
+
+    nivelAnterior = nivel;
+  
+  }
+  
+}
+
+
+char VerificarNivelTemperatura(int temperatura){
+  int result = 0;
+  if(temperatura < 30){
+	  result = '0';
+  }
+  else if(temperatura >= 30 && temperatura <= 34){
+	  result = '1';
+  }
+  else if(temperatura >= 35 && temperatura <= 39){
+	  result = '2';
+  }
+  else if(temperatura >= 40 && temperatura <= 44){
+	  result = '3';
+  }
+  else if(temperatura >= 45 && temperatura <= 49){
+	  result = '4';
+  }
+  else if(temperatura >= 50 && temperatura <= 54){
+	  result = 'f';
+  }
+  else if(temperatura >= 55 && temperatura <= 59){
+	  result = 'g';
+  }
+  else if(temperatura >= 60 && temperatura <= 64){
+	  result = 'h';
+  }
+  else if(temperatura >= 65 && temperatura <= 69){
+	  result = 'i';
+  }
+  else if(temperatura >= 70){
+	  result = 'j';
+  }
+  
+  return result;
+}
+
+
+void MostrarNivelTemperatura(char nivel){
+  
+  int arr[] = {0, 0, 0, 0, 0, 0, 0, 0};
+  
+  switch(nivel){
+    case '1':
+    {
+    	arr[4] = 1;
+      	arr[7] = 1;
+    	break;
+    }
+    case '2':
+    {
+      	//digitalWrite(numeros[1], HIGH); // | izquierda arriba
+    	//digitalWrite(numeros[2], HIGH); // - del medio
+    	//digitalWrite(numeros[3], HIGH); // - de arriba
+    	//digitalWrite(numeros[4], HIGH); // | derecha arriba
+    	//digitalWrite(numeros[5], HIGH); // | izquierda abajo
+    	//digitalWrite(numeros[6], HIGH); // - de abajo
+        arr[2] = 1;
+        arr[3] = 1;
+        arr[4] = 1;
+        arr[5] = 1;
+        arr[6] = 1;
+        break;
+    }
+    
+    case '3':
+    {
+      	arr[2] = 1;
+        arr[3] = 1;
+      	arr[4] = 1;
+        arr[6] = 1;
+      	arr[7] = 1;
+      	break;
+    }
+    
+    case '4':
+    {
+    	arr[1] = 1;
+      	arr[2] = 1;
+      	arr[4] = 1;
+      	arr[7] = 1;
+    	break;
+    }
+    case 'f':
+    {
+    	arr[1] = 1;
+      	arr[2] = 1;
+      	arr[3] = 1;
+      	arr[5] = 1;
+    	break;
+    }
+    case 'g':
+    {
+    	arr[1] = 1;
+      	arr[2] = 1;
+      	arr[3] = 1;
+      	arr[5] = 1;
+      	arr[6] = 1;
+      	arr[7] = 1;
+      
+    	break;
+    }
+    case 'h':
+    {
+      	arr[1] = 1;
+      	arr[2] = 1;
+        arr[4] = 1;
+      	arr[5] = 1;
+        arr[7] = 1;
+      	break;
+    }
+    case 'i':
+    {  
+      	//arr[0] y arr[2] - del medio son iguales
+      	//arr[0] = 1; // - del medio
+      	arr[4] = 1;
+      	arr[7] = 1;
+      	break;
+    }
+    case 'j':
+    {
+      	arr[4] = 1;
+      	arr[6] = 1;
+      	arr[7] = 1;
+    	break;
+    }
+    
+  }
+  ModificarMuestraNivelTemperatura(arr, 8);
+  
+}
+
+void ModificarMuestraNivelTemperatura(int arr[], int size) {
+  for (int j = 0; j < size; j++) {
+    digitalWrite(numeros[j], arr[j]);
+  }
+}
+void ApagarMuestraNivelTemperatura(){
+
+  for(int i = 0; i < 8; i++){
+   	 digitalWrite(numeros[i], LOW);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
