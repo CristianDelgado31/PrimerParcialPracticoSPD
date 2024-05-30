@@ -7,7 +7,7 @@
 
 
 
-## Proyecto: Montacarga funcional
+## Proyecto: Sistema de Incendios
 ![Sistema de incendio](https://gyazo.com/f718582f7c4689e7726fbd4e8408025c.png)
 
 ## Diagrama esquematico del circuito
